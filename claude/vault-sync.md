@@ -7,7 +7,7 @@
 ## 상태 파일
 
 ```
-STATE_FILE = C:\Users\삼우TCS-\.claude\vault-sync-state.json
+STATE_FILE = ~/.claude/vault-sync-state.json
 ```
 
 상태 파일 스키마:
@@ -42,7 +42,7 @@ mode:
 
 ## Step 0 — 활성화 게이트 (모든 호출의 첫 번째 단계)
 
-`C:\Users\삼우TCS-\.claude\vault-sync-state.json` 읽기 → `enabled`, `vault_path` 확인.
+`~/.claude/vault-sync-state.json` 읽기 → `enabled`, `vault_path` 확인.
 
 ---
 
