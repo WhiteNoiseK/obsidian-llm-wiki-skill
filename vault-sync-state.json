@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "vault_path": null,
+  "enabled_at": null,
+  "disabled_at": "2026-06-13",
+  "note": "LLM Wiki 동기화 기능. /vault-sync enable 로 초기 셋업 및 활성화."
+}
