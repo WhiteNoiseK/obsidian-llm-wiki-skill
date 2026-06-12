@@ -473,7 +473,38 @@ tags: ["#system", "#architecture"]
 
 ---
 
-**[5단계] 셋업 완료 및 state.json 업데이트**
+**[5단계] 현재 프로젝트 자동 등록**
+
+`enable`을 실행한 디렉토리를 현재 프로젝트로 인식하여 볼트에 자동 등록한다.
+
+1. 현재 작업 디렉토리(CWD) 확인 → 마지막 폴더명을 `{project_name}`으로 사용
+2. `{vault_path}/20_Projects/{project_name}/` 폴더 생성 (없을 때만)
+3. `{vault_path}/20_Projects/{project_name}/00_Project_Index.md` 생성 (없을 때만):
+
+```markdown
+---
+title: "{project_name}"
+date: YYYY-MM-DD
+tags: ["#project/active"]
+---
+
+# 🏗️ {project_name}
+
+## 상태
+🟢 진행 중
+
+## 원본 저장소
+[{project_name}](file:///{CWD 절대경로})
+
+## 핵심 문서 링크
+(vault-sync classify 실행 후 자동 채워집니다)
+```
+
+4. `{vault_path}/000_Index.md`의 `## 🏗️ 20_Projects` 섹션에 `[[{project_name}/00_Project_Index]]` 링크 추가
+
+---
+
+**[6단계] 셋업 완료 및 state.json 업데이트**
 
 state.json을 다음으로 업데이트:
 ```json
@@ -493,6 +524,7 @@ state.json을 다음으로 업데이트:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 볼트 경로: {vault_path}
+등록된 프로젝트: {project_name}
 
 생성된 구조:
   ├── .clauderules
@@ -500,7 +532,8 @@ state.json을 다음으로 업데이트:
   ├── 00_Wiki_Standard_Architecture.md
   ├── 00_Inbox/_README.md
   ├── 10_Wiki_Knowledge/_README.md (+ Concepts/ Entities/ Domains/)
-  ├── 20_Projects/_README.md
+  ├── 20_Projects/
+  │   └── {project_name}/00_Project_Index.md  ← 이 프로젝트
   ├── 30_Sources/_README.md
   ├── 40_Templates/ (Tpl_Concept.md, Tpl_Meeting.md)
   └── 99_System_Agent/ (_README.md, Architecture_Separation_Doctrine.md)
@@ -511,9 +544,9 @@ state.json을 다음으로 업데이트:
   2. "Open folder as vault" 선택
   3. {vault_path} 선택
 
-프로젝트 문서 동기화 시작:
-  /vault-sync [프로젝트경로] status   ← 먼저 대상 확인
-  /vault-sync [프로젝트경로] full     ← 전체 동기화
+이 프로젝트 동기화 시작:
+  /vault-sync . status   ← 먼저 대상 확인
+  /vault-sync . full     ← 전체 동기화
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 

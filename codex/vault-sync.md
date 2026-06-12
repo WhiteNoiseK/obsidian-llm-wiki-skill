@@ -30,9 +30,12 @@ vault-sync disable
    - 각 폴더에 `_README.md` 생성 (에이전트 지침 포함)
    - `40_Templates/Tpl_Concept.md`, `Tpl_Meeting.md` 생성
    - `99_System_Agent/Architecture_Separation_Doctrine.md` 생성
-5. `vault-sync-state.json` 업데이트: `enabled: true`, `vault_path: {경로}`
+5. **현재 프로젝트 자동 등록**: 현재 작업 디렉토리(CWD)의 마지막 폴더명을 `{project_name}`으로 사용하여
+   `{vault_path}/20_Projects/{project_name}/00_Project_Index.md` 생성 (없을 때만).
+   `000_Index.md`의 20_Projects 섹션에 `[[{project_name}/00_Project_Index]]` 링크 추가.
+6. `vault-sync-state.json` 업데이트: `enabled: true`, `vault_path: {경로}`
 
-**mode == "enable" 이고 vault_path 이미 설정됨**: `enabled: true` 로만 업데이트.
+**mode == "enable" 이고 vault_path 이미 설정됨**: `enabled: true` 로 업데이트 + 현재 프로젝트 자동 등록(5번) 수행.
 
 **enabled == false 이고 mode가 classify/refactor/full**: 알림만 출력 후 종료.
 
