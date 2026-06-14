@@ -7,15 +7,12 @@ param(
 
 $base = "https://raw.githubusercontent.com/WhiteNoiseK/obsidian-llm-wiki-skill/main"
 
-# shared state file
+# Claude config dir (used for the command file below).
+# Config is project-local: `vault-sync enable` generates a .vault-sync.toml in each
+# project root (the single source of truth for vault_path, enabled, and mappings).
+# No global state file is installed.
 $claudeDir = "$env:USERPROFILE\.claude"
 if (-not (Test-Path $claudeDir)) { New-Item -ItemType Directory -Force $claudeDir | Out-Null }
-
-$stateFile = "$claudeDir\vault-sync-state.json"
-if (-not (Test-Path $stateFile)) {
-    Invoke-WebRequest "$base/vault-sync-state.json" -OutFile $stateFile
-    Write-Host "  [shared] vault-sync-state.json -> $stateFile"
-}
 
 foreach ($tool in $Tools) {
     switch ($tool.ToLower()) {

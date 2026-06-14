@@ -20,14 +20,33 @@ Every synchronized document MUST contain one of the following tags at the very t
 
 ---
 
+## Configuration Authority (single source of truth)
+The `.vault-sync.toml` in the **project root** is the SINGLE authority for this project's sync
+configuration: `vault_path`, `enabled`, and the `[mappings]` table. Because it lives inside the
+project workspace, every engine (Claude, Codex, Gemini) can read it under default sandboxing.
+
+**Do NOT read `~/.claude/vault-sync-state.json`** — it is legacy and non-authoritative. Never source
+`vault_path` or `enabled` from outside the workspace.
+
+---
+
 ## Execution Sequence
 
 ### Step 0: Activation & Validation
-1. Read `~/.claude/vault-sync-state.json` to check `enabled` and `vault_path`.
-2. If `enabled == false` AND `mode != "disable"`: Output a warning notification `"LLM Wiki가 비활성화 상태입니다. vault-sync enable 로 활성화하세요."` and HALT execution immediately.
-3. If `mode == "disable"`: Update state file setting `enabled: false` and exit.
-4. Validate that `--type` is provided (except for `disable` or `plan` modes without options).
-5. If `mode == "enable"`, check the project's root for `.vault-sync.toml`. If it does not exist, analyze the current project's documentation folder structure and automatically generate a `.vault-sync.toml` that maps local folders to the Obsidian standard folders (e.g. `20_Projects/[Project_Name]/PM_Guide`, `AI_Workflow`) and global knowledge paths (`10_Wiki_Knowledge`).
+1. If `mode == "enable"`:
+   - If `.vault-sync.toml` does NOT exist in the project root: analyze the project's documentation
+     folder structure and generate it, containing `vault_path` (the absolute Obsidian vault path — if
+     it cannot be determined, prompt the user; never guess), `enabled = true`, and a `[mappings]`
+     table mapping local folders to the Obsidian standard folders (e.g.
+     `20_Projects/[Project_Name]/AI_Workflow`, `10_Wiki_Knowledge/Domains`). Set transient or
+     operational folders (scores, handoffs, reviews, tasks, harness internals, code) to `IGNORE`.
+   - If it already exists: set `enabled = true` and exit WITHOUT overwriting existing mappings.
+2. Read `.vault-sync.toml`. If it is missing, or `vault_path` / `enabled` is absent or malformed:
+   **HALT (fail closed)** and tell the user to run `vault-sync enable` first.
+3. If `enabled == false` AND `mode != "disable"`: output the warning
+   `"LLM Wiki가 비활성화 상태입니다. vault-sync enable 로 활성화하세요."` and HALT immediately.
+4. If `mode == "disable"`: set `enabled = false` in `.vault-sync.toml` and exit.
+5. Validate that `--type` is provided (except for `disable` or `plan` modes without options).
 
 ### Step 1: Authority Evaluation & Classification (Mode: `eval`)
 If `mode == "eval"` OR the `--auth` option is NOT provided:
@@ -37,9 +56,11 @@ If `mode == "eval"` OR the `--auth` option is NOT provided:
 ### Step 2: Synchronization Logic (Modes: `init` / `update` / `plan`)
 
 #### Deterministic Path Mapping Rules
-Always determine the Vault destination by reading the `.vault-sync.toml` mapping file in the project root.
+Determine the Vault destination by reading the `[mappings]` table in `.vault-sync.toml` (project root),
+then prefixing the matched destination with `vault_path` from the same file.
+- Use **longest-prefix match**; a more specific path mapped to `IGNORE` overrides a broader parent.
 - Do NOT use hardcoded paths.
-- If `.vault-sync.toml` is missing, you must HALT execution and prompt the user to run `vault-sync enable` to auto-generate the mapping file first.
+- If `.vault-sync.toml` is missing, HALT and prompt the user to run `vault-sync enable` first.
 - If a folder is mapped to `IGNORE` or is not mapped, do not sync it.
 
 #### Mode: `plan`

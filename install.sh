@@ -8,12 +8,9 @@ BASE="https://raw.githubusercontent.com/WhiteNoiseK/obsidian-llm-wiki-skill/main
 CLAUDE_DIR="$HOME/.claude"
 mkdir -p "$CLAUDE_DIR"
 
-# shared state file
-STATE_FILE="$CLAUDE_DIR/vault-sync-state.json"
-if [ ! -f "$STATE_FILE" ]; then
-    curl -fsSL "$BASE/vault-sync-state.json" -o "$STATE_FILE"
-    echo "  [shared] vault-sync-state.json -> $STATE_FILE"
-fi
+# Config is project-local: `vault-sync enable` generates a .vault-sync.toml in each
+# project root (the single source of truth for vault_path, enabled, and mappings).
+# No global state file is installed.
 
 for tool in $TOOLS; do
     case "$tool" in

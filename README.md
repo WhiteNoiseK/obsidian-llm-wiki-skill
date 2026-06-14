@@ -6,7 +6,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex** — one install, all t
 
 ## What it does (V2 Authority Framework)
 
-- **enable** — initializes the state, prepares the vault structure, and auto-generates a `.vault-sync.toml` mapping file for the project
+- **enable** — generates the project's `.vault-sync.toml` (the single config source: `vault_path`, `enabled`, and folder mappings) and prepares the vault structure
 - **eval** — scans documents for Authority/SSOT tags, halts if missing
 - **init** — first-time sync. Copies source to vault with explicit SSOT warning headers and 8-level Authority tags
 - **update** — incremental sync. Safely merges text changes while preserving vault link structures
@@ -56,7 +56,9 @@ curl -fsSL .../install.sh | bash -s codex
 | Claude Code | `claude/vault-sync.md` | `~/.claude/commands/vault-sync.md` |
 | Gemini CLI | `gemini/vault-sync.md` | append to `~/.gemini/GEMINI.md` |
 | Codex | `codex/vault-sync.md` | append to `~/.codex/instructions.md` |
-| All tools | `vault-sync-state.json` | `~/.claude/vault-sync-state.json` |
+
+> Config is per-project: `vault-sync enable` writes a `.vault-sync.toml` to the project root
+> (the single source of truth for `vault_path`, `enabled`, and mappings). No global state file.
 
 ## Usage
 
