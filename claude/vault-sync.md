@@ -27,6 +27,7 @@ Every synchronized document MUST contain one of the following tags at the very t
 2. If `enabled == false` AND `mode != "disable"`: Output a warning notification `"LLM Wiki가 비활성화 상태입니다. vault-sync enable 로 활성화하세요."` and HALT execution immediately.
 3. If `mode == "disable"`: Update state file setting `enabled: false` and exit.
 4. Validate that `--type` is provided (except for `disable` or `plan` modes without options).
+5. If `mode == "enable"`, check the project's root for `.vault-sync.toml`. If it does not exist, analyze the current project's documentation folder structure and automatically generate a `.vault-sync.toml` that maps local folders to the Obsidian standard folders (e.g. `20_Projects/[Project_Name]/PM_Guide`, `AI_Workflow`) and global knowledge paths (`10_Wiki_Knowledge`).
 
 ### Step 1: Authority Evaluation & Classification (Mode: `eval`)
 If `mode == "eval"` OR the `--auth` option is NOT provided:
@@ -36,16 +37,10 @@ If `mode == "eval"` OR the `--auth` option is NOT provided:
 ### Step 2: Synchronization Logic (Modes: `init` / `update` / `plan`)
 
 #### Deterministic Path Mapping Rules
-Always place the file in the exact Vault destination based on the source path:
-- `docs/engineering/` -> `10_Wiki_Knowledge/Domains/`
-- `docs/learning/` -> `10_Wiki_Knowledge/Concepts/`
-- `docs/information/` -> `30_Sources/`
-- `docs/deploy/` -> `20_Projects/[Project_Name]/Deploy/`
-- `docs/experiments/` -> `20_Projects/[Project_Name]/Experiments/`
-- `docs/retrospective/` -> `20_Projects/[Project_Name]/Retrospective/`
-- `docs/pm-guide/` -> `20_Projects/[Project_Name]/PM_Guide/`
-- `docs/` (root) -> `20_Projects/[Project_Name]/`
-- `node_modules/`, `assets/`, `api/`, `frontend/import/` -> **SKIP (Do not sync)**
+Always determine the Vault destination by reading the `.vault-sync.toml` mapping file in the project root.
+- Do NOT use hardcoded paths.
+- If `.vault-sync.toml` is missing, you must HALT execution and prompt the user to run `vault-sync enable` to auto-generate the mapping file first.
+- If a folder is mapped to `IGNORE` or is not mapped, do not sync it.
 
 #### Mode: `plan`
 - Evaluate the document authority and output a dry-run plan of how it will be synchronized without modifying any files.

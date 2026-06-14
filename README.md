@@ -6,7 +6,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex** — one install, all t
 
 ## What it does (V2 Authority Framework)
 
-- **enable** — initializes the state and prepares the agent
+- **enable** — initializes the state, prepares the vault structure, and auto-generates a `.vault-sync.toml` mapping file for the project
 - **eval** — scans documents for Authority/SSOT tags, halts if missing
 - **init** — first-time sync. Copies source to vault with explicit SSOT warning headers and 8-level Authority tags
 - **update** — incremental sync. Safely merges text changes while preserving vault link structures
@@ -98,6 +98,8 @@ vault-sync disable                  # pause
 
 Wiki and project repos stay physically separate.
 The vault holds **permanent knowledge only** — links point to source repos, never duplicate content.
+
+**Local Project Mapping (TOML)**: To prevent Vault contamination, mapping from legacy/local project paths to Vault standard paths is purely managed by a `.vault-sync.toml` file generated in the root of the active project during `enable`.
 
 ## Requirements
 
