@@ -4,13 +4,14 @@
 
 Works with **Claude Code**, **Gemini CLI**, and **Codex** — one install, all three.
 
-## What it does
+## What it does (V2 Authority Framework)
 
-- **enable** — guided Obsidian setup + auto-scaffolds the entire vault structure
-- **classify** — scans project docs and creates permanent knowledge entries (Concepts / Entities / Domains)
-- **refactor** — converts source docs to reference style, replacing generic explanations with vault links
-- **full** — classify + refactor at once, idempotent on repeat runs
-- **status** — preview what would change, no writes (always available)
+- **enable** — initializes the state and prepares the agent
+- **eval** — scans documents for Authority/SSOT tags, halts if missing
+- **init** — first-time sync. Copies source to vault with explicit SSOT warning headers and 8-level Authority tags
+- **update** — incremental sync. Safely merges text changes while preserving vault link structures
+- **plan** — preview what would change, no writes (dry-run)
+- **relocate** — explicitly asks for old/new paths to batch-heal broken links after project folder moves
 - **disable** — pause without deleting anything
 
 ## Install
@@ -66,11 +67,12 @@ curl -fsSL .../install.sh | bash -s codex
 | Codex | `vault-sync enable` |
 
 ```
-vault-sync enable                   # first-time setup wizard
-vault-sync [project_path] status    # preview sync targets
-vault-sync [project_path] classify  # create vault entries
-vault-sync [project_path] refactor  # convert source docs
-vault-sync [project_path] full      # classify + refactor
+vault-sync enable                   # activate sync tracking
+vault-sync [project_path] plan      # preview sync targets
+vault-sync [project_path] eval      # verify SSOT authority tags
+vault-sync [project_path] init      # create vault entries with anchors
+vault-sync [project_path] update    # update body text only
+vault-sync [project_path] relocate  # heal broken links
 vault-sync disable                  # pause
 ```
 
