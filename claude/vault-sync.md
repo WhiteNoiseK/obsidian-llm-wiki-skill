@@ -48,6 +48,7 @@ project workspace, every engine (Claude, Codex, Gemini) can read it under defaul
      table mapping local folders to the Obsidian standard folders (e.g.
      `20_Projects/[Project_Name]/AI_Workflow`, `10_Wiki_Knowledge/Domains`). Set transient or
      operational folders (scores, handoffs, reviews, tasks, harness internals, code) to `IGNORE`.
+   - **CRITICAL**: You MUST also inject a document creation rule into the project's governance files (e.g. `.clauderules`, `AGENTS.md`, or `docs/_knowledge-architecture.md`). The rule must explicitly enforce that: "ALL newly created markdown documents within the project MUST include an appropriate 8-level Authority tag (e.g., `#authority/domain/...`) at the very top of the file."
    - If it already exists: set `enabled = true` and exit WITHOUT overwriting existing mappings.
 2. Read `.vault-sync.toml`. If it is missing, or `vault_path` / `enabled` is absent or malformed:
    **HALT (fail closed)** and tell the user to run `vault-sync enable` first.
