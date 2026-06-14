@@ -14,6 +14,8 @@ Every synchronized document MUST contain one of the following tags at the very t
 - **Domain:** `#authority/domain/supreme`, `#authority/domain/single`, `#authority/domain/derived`, `#authority/domain/deprecated`
 - **System:** `#authority/system/absolute`, `#authority/system/active`, `#authority/system/inactive`, `#authority/system/deprecated`
 
+> **These 8 tags are FILE-level labels only.** A binding quantitative item *inside* a document (a performance/function target) is **"priority authority"**, NOT a file label — it must be complied with but receives **no `#authority/...` tag of its own** (the host file keeps its own file-level tag, usually `#authority/domain/derived`). **Never tag an in-document item.** The priority-authority concept is owned by the project's `docs/_knowledge-architecture.md §2`; this skill only references it.
+
 ## Source Immutability Invariant (Strictly Enforced)
 Source repository files are strictly read-only inputs for vault-sync.
 vault-sync must NEVER modify, delete, shrink, replace, link-rewrite, normalize, or reformat any
@@ -55,8 +57,9 @@ project workspace, every engine (Claude, Codex, Gemini) can read it under defaul
 
 ### Step 1: Authority Evaluation & Classification (Mode: `eval`)
 If `mode == "eval"` OR the `--auth` option is NOT provided:
-- Scan the source document body and its Git original to infer its authority level.
-- **CRITICAL**: If the document does not have explicit Single Source of Truth (SSOT) markers or a status table, you must **NEVER** add an arbitrary tag. You must **HALT** the synchronization and notify the user that authority cannot be safely determined.
+- **Primary signal — read the source's explicit `#authority/[type]/[level]` tag** (at the top of the source file) and use that level verbatim.
+- Fallback only if no tag is present: infer from explicit Single Source of Truth (SSOT) markers / a status table (a fallback only — per `_knowledge-architecture.md §2`, a bare `status:` is no longer a standalone classifier).
+- **CRITICAL**: If neither an `#authority/...` tag nor an explicit SSOT marker/status table is present, you must **NEVER** add an arbitrary tag. You must **HALT** the synchronization and notify the user that authority cannot be safely determined.
 
 ### Step 2: Synchronization Logic (Modes: `init` / `update` / `plan`)
 

@@ -7,7 +7,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex** — one install, all t
 ## What it does (V2 Authority Framework)
 
 - **enable** — generates the project's `.vault-sync.toml` (the single config source: `vault_path`, `enabled`, and folder mappings) and prepares the vault structure
-- **eval** — scans documents for Authority/SSOT tags, halts if missing
+- **eval** — reads the source's `#authority/...` tag (falls back to SSOT/status markers), halts if none. File-level tags only — in-document binding items are "priority authority" and are never tagged
 - **init** — first-time sync. Copies source to vault with explicit SSOT warning headers and 8-level Authority tags
 - **update** — incremental sync. Safely merges text changes while preserving vault link structures
 - **plan** — preview what would change, no writes (dry-run)
