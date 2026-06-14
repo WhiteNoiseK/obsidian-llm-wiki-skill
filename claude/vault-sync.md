@@ -18,7 +18,15 @@ Every synchronized document MUST contain one of the following tags at the very t
 - **Domain:** `#authority/domain/supreme`, `#authority/domain/single`, `#authority/domain/derived`, `#authority/domain/deprecated`
 - **System:** `#authority/system/absolute`, `#authority/system/active`, `#authority/system/inactive`, `#authority/system/deprecated`
 
----
+## Source Immutability Invariant (Strictly Enforced)
+Source repository files are strictly read-only inputs for vault-sync.
+vault-sync must NEVER modify, delete, shrink, replace, link-rewrite, normalize, or reformat any
+source document in the repository. Only the external Vault snapshot may be created or updated.
+
+## Multi-Engine Scopes
+- **Claude**: Orchestrator. Full rights to external Vault writes (`init`, `update`) and `plan` / `eval`.
+- **Gemini**: Documentation Writer / Independent Scorer. Restricted to `plan` and `eval`. External Vault writes are FORBIDDEN.
+- **Codex**: Read-only reviewer. Restricted to `plan` and `eval`. External Vault writes are FORBIDDEN unless explicitly delegated via a path allowlist.
 
 ## Configuration Authority (single source of truth)
 The `.vault-sync.toml` in the **project root** is the SINGLE authority for this project's sync
@@ -58,6 +66,7 @@ If `mode == "eval"` OR the `--auth` option is NOT provided:
 #### Deterministic Path Mapping Rules
 Determine the Vault destination by reading the `[mappings]` table in `.vault-sync.toml` (project root),
 then prefixing the matched destination with `vault_path` from the same file.
+- Mapping keys are workspace-relative folder paths **without trailing slashes** (e.g. `docs/pm-guide`).
 - Use **longest-prefix match**; a more specific path mapped to `IGNORE` overrides a broader parent.
 - Do NOT use hardcoded paths.
 - If `.vault-sync.toml` is missing, HALT and prompt the user to run `vault-sync enable` first.
@@ -68,11 +77,14 @@ then prefixing the matched destination with `vault_path` from the same file.
 
 #### Mode: `init` (Initial Sync)
 - Copy the contents from `[source_path]` into the deterministic Vault location defined above.
-- Add the following Non-Authoritative Snapshot warning at the very top:
-  `> ⚠️ 비권위 스냅샷 경고문`
+- Add the following explicit Non-Authoritative Snapshot warning at the very top:
+  `> ⚠️ Non-authoritative snapshot.`
+  `> Authority remains: <repo-relative-source-path>`
+  `> Do not cite this Vault copy as SSOT. Use the repository source file.`
+  `> Synced at: <timestamp>`
 - Inject the `#authority/.../...` tag directly below the warning.
 - **Project Anchor Link**: Inject `Project: [[Project_Name]]` directly below the authority tag to ensure Graph View clustering.
-- **Refactoring Rule**: Replace general conceptual explanations in the original source document with Obsidian internal WikiLinks (`[[...]]`). Do NOT use `obsidian://` links as they break Foam/portal pipelines and AI sight.
+- **Refactoring Rule**: Replace general conceptual explanations in the **Vault snapshot document** (NOT the original source document) with Obsidian internal WikiLinks (`[[...]]`). Do NOT use `obsidian://` links as they break Foam/portal pipelines and AI sight.
 
 #### Mode: `update` (Incremental Sync)
 - If the document already exists in the Vault, merge and update the body text with the Git original safely.
